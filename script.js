@@ -7,7 +7,6 @@ let weeklyTarget = 40;
 // Utility Functions
 // ==============================
 
-// Populate dropdowns with leading zeros
 function populateDropdown(select, max) {
   for (let i = 0; i <= max; i++) {
     const option = document.createElement("option");
@@ -16,7 +15,6 @@ function populateDropdown(select, max) {
   }
 }
 
-// Get combined HH:MM string from dropdowns
 function getTimeString(hourId, minuteId) {
   const hour = document.getElementById(hourId).value;
   const minute = document.getElementById(minuteId).value;
@@ -27,7 +25,6 @@ function getTimeString(hourId, minuteId) {
 // Record Management
 // ==============================
 
-// Sort records chronologically by date, then by clock-in time
 function sortRecords() {
   records.sort((a, b) => {
     const dateA = new Date(a.date);
@@ -35,14 +32,12 @@ function sortRecords() {
     if (dateA.getTime() !== dateB.getTime()) {
       return dateA - dateB;
     }
-    // Same date → compare start time
     const timeA = new Date(`1970-01-01T${a.start}`);
     const timeB = new Date(`1970-01-01T${b.start}`);
     return timeA - timeB;
   });
 }
 
-// Calculate worked hours
 function calculateHours(record) {
   const start = new Date(`1970-01-01T${record.start}`);
   const end = new Date(`1970-01-01T${record.end}`);
@@ -51,7 +46,6 @@ function calculateHours(record) {
   return worked < 0 ? 0 : worked;
 }
 
-// Render table
 function renderTable(filteredRecords = records) {
   const tbody = document.getElementById("recordsTableBody");
   tbody.innerHTML = "";
@@ -74,7 +68,6 @@ function renderTable(filteredRecords = records) {
   updateDashboard();
 }
 
-// Update dashboard
 function updateDashboard() {
   const totalWorked = records.reduce((sum, r) => sum + calculateHours(r), 0);
   const remaining = weeklyTarget - totalWorked;
@@ -89,11 +82,11 @@ function updateDashboard() {
   fill.style.backgroundColor = progress < 70 ? "#DC2626" : progress < 100 ? "#F59E0B" : "#16A34A";
 }
 
-// Save/load
 function saveRecords() {
   localStorage.setItem("records", JSON.stringify(records));
   localStorage.setItem("weeklyTarget", weeklyTarget);
 }
+
 function loadRecords() {
   records = JSON.parse(localStorage.getItem("records")) || [];
   weeklyTarget = parseFloat(localStorage.getItem("weeklyTarget")) || weeklyTarget;
@@ -101,7 +94,6 @@ function loadRecords() {
   renderTable();
 }
 
-// Add record
 function addRecord() {
   const date = document.getElementById("date").value;
   const start = getTimeString("startHour", "startMinute");
@@ -118,7 +110,6 @@ function addRecord() {
   renderTable();
 }
 
-// Edit record
 function editRecord(index) {
   const r = records[index];
   document.getElementById("date").value = r.date;
@@ -136,7 +127,6 @@ function editRecord(index) {
   renderTable();
 }
 
-// Delete record
 function deleteRecord(index) {
   records.splice(index, 1);
   sortRecords();
@@ -144,7 +134,6 @@ function deleteRecord(index) {
   renderTable();
 }
 
-// Clear all records
 function clearRecords() {
   if (confirm("Are you sure you want to clear all records?")) {
     records = [];
@@ -153,7 +142,6 @@ function clearRecords() {
   }
 }
 
-// Search records by date
 function searchRecords() {
   const searchDate = document.getElementById("searchDate").value;
   if (!searchDate) {
@@ -164,7 +152,6 @@ function searchRecords() {
   renderTable(filtered);
 }
 
-// Update weekly target
 function updateWeeklyTarget() {
   const targetInput = document.getElementById("weeklyTarget").value;
   weeklyTarget = parseFloat(targetInput) || weeklyTarget;
@@ -172,9 +159,7 @@ function updateWeeklyTarget() {
   updateDashboard();
 }
 
-// Initialization
 window.onload = () => {
-  // Populate dropdowns
   populateDropdown(document.getElementById("startHour"), 23);
   populateDropdown(document.getElementById("endHour"), 23);
   populateDropdown(document.getElementById("startMinute"), 59);
@@ -187,7 +172,6 @@ window.onload = () => {
   document.getElementById("searchBtn").addEventListener("click", searchRecords);
   document.getElementById("weeklyTarget").addEventListener("change", updateWeeklyTarget);
 
-  // Show today's date and time
   const today = new Date();
   document.getElementById("todayDate").textContent = today.toLocaleDateString();
   document.getElementById("currentWeek").textContent = `Week ${getWeekNumber(today)}`;
@@ -195,7 +179,6 @@ window.onload = () => {
   setInterval(updateTime, 1000);
 };
 
-// Helper: get week number
 function getWeekNumber(d) {
   d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
   const yearStart = new Date(Date.UTC(d.getFullYear(), 0, 1));
@@ -203,7 +186,6 @@ function getWeekNumber(d) {
   return weekNo;
 }
 
-// Helper: update current time
 function updateTime() {
   document.getElementById("currentTime").textContent = new Date().toLocaleTimeString();
 }
